@@ -1,0 +1,6 @@
+pandas
+streamlit
+PIL
+pix2tex
+pyperclip
+plotly
