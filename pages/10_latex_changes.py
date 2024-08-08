@@ -27,9 +27,11 @@ st.title(r"Remove $\LaTeX$ Changes")
 txt = st.text_area("input text")
 if txt:
     output = parse_latex_changes(txt)
-    st.text_area("output text", output)
+    st.caption("output text")
+    st.code(output, language="latex")
     try:
         pyperclip.copy(output)
         st.success("Copied to clipboard")
     except:
-        st.error("Failed to copy to clipboard. Please copy manually.")
+        st.error("Failed to copy to clipboard. "
+                 "Please copy manually by clicking the copy button at the right-top corner of the output text.")
