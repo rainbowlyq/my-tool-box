@@ -5,3 +5,4 @@ pix2tex==0.1.2
 pyperclip==1.9.0
 plotly==5.20.0
 texsoup
+st-copy-to-clipboard

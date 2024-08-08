@@ -9,6 +9,7 @@ import streamlit as st
 from PIL import Image, ImageGrab
 from pix2tex.cli import LatexOCR
 import pyperclip
+from st_copy_to_clipboard import st_copy_to_clipboard
 
 st.set_page_config(page_title="MathPix", page_icon="Ⓜ️", layout="wide")
 
@@ -36,12 +37,18 @@ def main():
     clipboard_image = None
     c1, c2, c3 = left_col.columns(3)
     if c1.button("Read from clipboard"):
-        clipboard_image = ImageGrab.grabclipboard()
-        if clipboard_image is None:
-            left_col.error("No image found in clipboard")
+        try:
+            clipboard_image = ImageGrab.grabclipboard()
+            if clipboard_image is None:
+                left_col.error("No image found in clipboard")
+        except NotImplementedError:
+            left_col.error("Clipboard image reading not supported on this platform. Please use the file uploader.")
     if c2.button("GPT to Markdown"):
-        clipboard_text = pyperclip.paste()
-        copy_to_clipboard(gpt2md(clipboard_text))
+        try:
+            clipboard_text = pyperclip.paste()
+            copy_to_clipboard(gpt2md(clipboard_text))
+        except NotImplementedError:
+            left_col.error("Clipboard not supported on this platform. ")
     if c3.button("Reset"):
         reset()
 
@@ -68,12 +75,12 @@ def main():
 
         res_right.text_area("OCR Output", latex_formula)
         b1, b2, b3 = res_right.columns(3)
-        if b1.button("Copy as LaTeX"):
-            copy_to_clipboard(latex_formula)
-        if b2.button("Copy as Markdown"):
-            copy_to_clipboard(md_formula)
-        if b3.button("Copy as HTML"):
-            copy_to_clipboard(html_formula)
+        with b1:
+            st_copy_to_clipboard(latex_formula, before_copy_label="Copy as LaTeX", after_copy_label="✅Copied!")
+        with b2:
+            st_copy_to_clipboard(md_formula, before_copy_label="Copy as Markdown", after_copy_label="✅Copied!")
+        with b3:
+            st_copy_to_clipboard(html_formula, before_copy_label="Copy as HTML", after_copy_label="✅Copied!")
 
 
 def gpt2md(text):
